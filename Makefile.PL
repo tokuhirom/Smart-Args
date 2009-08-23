@@ -2,7 +2,8 @@ use inc::Module::Install;
 name 'args';
 all_from 'lib/args.pm';
 
-# requires '';
+requires 'PadWalker';
+requires 'Mouse'; # will be remove deps.
 
 tests 't/*.t';
 author_tests 'xt';
