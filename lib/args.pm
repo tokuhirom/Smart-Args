@@ -32,7 +32,6 @@ sub args {
         }
     };
 
-    my $upper_my = PadWalker::peek_my(1);
     for (my $i=0; $i<@_; $i+=2) {
         my $rule = compile_rule($_[$i+1]);
         my $var_name = PadWalker::var_name(1,\$_[$i]);
@@ -46,7 +45,7 @@ sub args {
                 Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
-        ${$upper_my->{$var_name}} = $args->{$name};
+        $_[$i] = $args->{$name};
     }
 }
 
