@@ -2,12 +2,9 @@ package args;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use PadWalker qw/var_name/;
-use Smart::Comments;
-use Scalar::Util qw/refaddr/;
 use Exporter 'import';
 use Carp::Assert;
-use Scalar::Util;
+use PadWalker qw/var_name/;
 
 use Any::Moose;
 use Any::Moose '::Util::TypeConstraints';
