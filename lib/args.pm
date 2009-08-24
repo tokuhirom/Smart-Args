@@ -2,12 +2,13 @@ package args;
 use strict;
 use warnings;
 our $VERSION = '0.01';
-use PadWalker ();
+use PadWalker qw/var_name/;
 use Smart::Comments;
 use Scalar::Util qw/refaddr/;
 use Exporter 'import';
 use Mouse::Util::TypeConstraints;
 use Carp::Assert;
+use Scalar::Util;
 
 our @EXPORT = qw/args/;
 # our @EXPORT = qw/args MODIFY_SCALAR_ATTRIBUTES/;
@@ -15,26 +16,40 @@ our @EXPORT = qw/args/;
 my $compiled_rules;
 
 sub args {
+    my @args = do {
+	package DB;
+	my @c = caller(1);
+	@DB::args;
+    };
+
+    my $offset = 0;
+    if (@_%2 == 1) {
+	my $first_arg = var_name(1, \$_[0]);
+	if ($first_arg eq '$class') {
+	    $_[0] = shift @args;
+	    $offset++;
+	} elsif ( $first_arg eq '$self') {
+	    $_[0] = shift @args;
+	    $offset++;
+	}
+    }
+
     my $args = do {
-        my @args = do {
-            package DB;
-            my @c = caller(1);
-            @DB::args;
-        };
         if (ref $args[0] && @args == 1) {
             $args[0];
         } else {
             if (@args%2 == 0) {
                 +{@args};
             } else {
-                Carp::croak("oops");
+		### @args
+		Carp::croak("oops");
             }
         }
     };
 
-    for (my $i=0; $i<@_; $i+=2) {
+    for (my $i=$offset; $i<@_; $i+=2) {
         my $rule = compile_rule($_[$i+1]);
-        my $var_name = PadWalker::var_name(1,\$_[$i]);
+        my $var_name = var_name(1,\$_[$i]);
         assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
         if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {

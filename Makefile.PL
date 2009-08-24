@@ -5,6 +5,7 @@ all_from 'lib/args.pm';
 requires 'PadWalker';
 requires 'Mouse'; # will be remove deps?
 requires 'Carp::Assert';
+requires 'Scalar::Util' => 1.21; # old version has bug.
 
 tests('t/*.t t/*/*.t t/*/*/*.t');
 author_tests 'xt';
