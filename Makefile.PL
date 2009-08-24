@@ -3,7 +3,7 @@ name 'args';
 all_from 'lib/args.pm';
 
 requires 'PadWalker';
-requires 'Mouse'; # will be remove deps?
+requires 'Any::Moose';
 requires 'Carp::Assert';
 requires 'Scalar::Util' => 1.21; # old version has bug.
 

@@ -6,12 +6,14 @@ use PadWalker qw/var_name/;
 use Smart::Comments;
 use Scalar::Util qw/refaddr/;
 use Exporter 'import';
-use Mouse::Util::TypeConstraints;
 use Carp::Assert;
 use Scalar::Util;
 
+use Any::Moose;
+use Any::Moose '::Util::TypeConstraints';
+*find_type_constraint = any_moose('::Util::TypeConstraints')->can('find_type_constraint');
+
 our @EXPORT = qw/args/;
-# our @EXPORT = qw/args MODIFY_SCALAR_ATTRIBUTES/;
 
 my $compiled_rules;
 
@@ -72,11 +74,11 @@ sub compile_rule {
     if (!defined $rule) {
         return +{ }
     } if (!ref $rule) {
-        +{ type => Mouse::Util::TypeConstraints::find_type_constraint($rule) };
+        +{ type => find_type_constraint($rule) };
     } else {
         my $ret = +{ };
         if ($rule->{is}) {
-            $ret->{type} = Mouse::Util::TypeConstraints::find_type_constraint($rule->{is});
+            $ret->{type} = find_type_constraint($rule->{is});
         }
         for my $key (qw/optional default/) {
 	    if (exists $rule->{$key}) {
