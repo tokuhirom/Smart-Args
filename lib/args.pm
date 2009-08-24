@@ -7,44 +7,64 @@ use Smart::Comments;
 use Scalar::Util qw/refaddr/;
 use Exporter 'import';
 use Mouse::Util::TypeConstraints;
+use Carp::Assert;
 
-our @EXPORT = qw/args MODIFY_SCALAR_ATTRIBUTES/;
+our @EXPORT = qw/args/;
+# our @EXPORT = qw/args MODIFY_SCALAR_ATTRIBUTES/;
 
 my $compiled_rules;
 
 sub args {
-    package DB;
-    my @c = caller(1);
-    my @args = @DB::args;
-    my $args;
-    if (ref $args[0] && @args == 1) {
-        $args = $args[0];
-    } else {
-        if (@args%2 == 0) {
-            $args = {@args};
+    my @args = do {
+        package DB;
+        my @c = caller(1);
+        @DB::args;
+    };
+
+    my $args = do {
+        if (ref $args[0] && @args == 1) {
+            $args[0];
         } else {
-            Carp::croak("oops");
+            if (@args%2 == 0) {
+                +{@args};
+            } else {
+                Carp::croak("oops");
+            }
         }
-    }
+    };
+
     my $upper_my = PadWalker::peek_my(1);
-    for my $i (0..@_-1) {
-        my $rule = $compiled_rules->{Scalar::Util::refaddr(\$_[$i])};
+    for (my $i=0; $i<@_; $i+=2) {
+        my $rule = compile_rule($_[$i+1]);
         my $var_name = PadWalker::var_name(1,\$_[$i]);
+        assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
-        for my $r (@$rule) {
-            my $constraint = Mouse::Util::TypeConstraints::find_type_constraint($r);
-            unless ($constraint->check($args->{$name})) {
-                Carp::croak($constraint->get_message($args->{$name}));
+        if (! exists $args->{$name} && ! $rule->{optional}) {
+            Carp::croak("missing mandatory parameter named '$var_name'");
+        }
+        if (exists $args->{$name} && defined $rule->{type}) {
+            unless ($rule->{type}->check($args->{$name})) {
+                Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
         ${$upper_my->{PadWalker::var_name(1, \$_[$i])}} = $args->{$name};
     }
 }
 
-sub MODIFY_SCALAR_ATTRIBUTES {
-    my ($pkg, $ref, @attrs) = @_;
-    $compiled_rules->{refaddr($ref)} = \@attrs;
-    return;
+sub compile_rule {
+    my ($rule) = @_;
+    if (!ref $rule) {
+        +{ type => Mouse::Util::TypeConstraints::find_type_constraint($rule) };
+    } else {
+        my $ret = +{ };
+        if ($rule->{is}) {
+            $ret->{type} = Mouse::Util::TypeConstraints::find_type_constraint($rule->{is});
+        }
+        if ($rule->{optional}) {
+            $ret->{optional}++;
+        }
+        return $ret;
+    }
 }
 
 1;
@@ -82,6 +102,10 @@ args - proof of concept
 =head1 DESCRIPTION
 
 args is
+
+=head1 TODO
+
+coercion support?
 
 =head1 AUTHOR
 
