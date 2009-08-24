@@ -37,7 +37,7 @@ sub args {
         my $var_name = PadWalker::var_name(1,\$_[$i]);
         assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
-        if (! exists $args->{$name} && ! $rule->{optional}) {
+        if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {
             Carp::croak("missing mandatory parameter named '$var_name'");
         }
         if (exists $args->{$name} && defined $rule->{type}) {
@@ -45,6 +45,9 @@ sub args {
                 Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
+	if (!exists $args->{$name} && exists $rule->{default}) {
+	    $args->{$name} = $rule->{default};
+	}
         $_[$i] = $args->{$name};
     }
 }
@@ -60,8 +63,10 @@ sub compile_rule {
         if ($rule->{is}) {
             $ret->{type} = Mouse::Util::TypeConstraints::find_type_constraint($rule->{is});
         }
-        if ($rule->{optional}) {
-            $ret->{optional}++;
+        for my $key (qw/optional default/) {
+	    if (exists $rule->{$key}) {
+		$ret->{$key} = $rule->{$key};
+	    }
         }
         return $ret;
     }
