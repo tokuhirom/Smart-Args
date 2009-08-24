@@ -46,7 +46,7 @@ sub args {
                 Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
-        ${$upper_my->{PadWalker::var_name(1, \$_[$i])}} = $args->{$name};
+        ${$upper_my->{$var_name}} = $args->{$name};
     }
 }
 
@@ -79,26 +79,38 @@ args - proof of concept
 
   use args;
   sub func {
-    argsp my $p:Int;
+    argsp my $p => 'Int';
   }
   func(3);
 
   sub func2 {
-    args my $p:Int,
-         my $q:Int :Optional;
+    args my $p => 'Int',
+         my $q => { is => 'Int', optional => 1 };
   }
   func2(p => 3, q => 4); # p => 3, q => 4
   func2(p => 3);         # p => 3, q => undef
+
+  sub func3 {
+    args my $p => {is => 'Int', default => 3},
+  }
+  func3(p => 4); # p => 4
+  func3();       # p => 4
 
   package F;
   use Moose;
   sub method {
     args my $self,
-         my $p: Int;
+         my $p => 'Int';
+  }
+  sub class_method {
+    args my $class,
+         my $p => 'Int';
   }
 
   my $f = F->new();
   $f->method(p => 3);
+
+  F->class_method(p => 3);
 
 =head1 DESCRIPTION
 
