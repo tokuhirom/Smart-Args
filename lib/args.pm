@@ -15,13 +15,12 @@ our @EXPORT = qw/args/;
 my $compiled_rules;
 
 sub args {
-    my @args = do {
-        package DB;
-        my @c = caller(1);
-        @DB::args;
-    };
-
     my $args = do {
+        my @args = do {
+            package DB;
+            my @c = caller(1);
+            @DB::args;
+        };
         if (ref $args[0] && @args == 1) {
             $args[0];
         } else {
@@ -53,7 +52,9 @@ sub args {
 
 sub compile_rule {
     my ($rule) = @_;
-    if (!ref $rule) {
+    if (!defined $rule) {
+        return +{ }
+    } if (!ref $rule) {
         +{ type => Mouse::Util::TypeConstraints::find_type_constraint($rule) };
     } else {
         my $ret = +{ };
