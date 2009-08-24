@@ -12,8 +12,6 @@ use Any::Moose '::Util::TypeConstraints';
 
 our @EXPORT = qw/args/;
 
-my $compiled_rules;
-
 sub args {
     my @args = do {
 	package DB;
@@ -51,6 +49,7 @@ sub args {
         my $var_name = var_name(1,\$_[$i]);
         assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
+	assert($name);
         if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {
             Carp::croak("missing mandatory parameter named '$var_name'");
         }
