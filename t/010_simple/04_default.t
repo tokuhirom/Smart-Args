@@ -9,7 +9,6 @@ done_testing;
 exit;
 
 sub foo {
-    my $p;
-    args $p => { is => 'Int', default => 99 };
+    args my $p => { is => 'Int', default => 99 };
     return $p;
 }

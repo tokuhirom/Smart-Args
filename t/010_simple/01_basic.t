@@ -8,7 +8,6 @@ done_testing;
 exit;
 
 sub foo {
-    my $pi; # XXX
-    args $pi;
+    args my $pi;
     is $pi, 3.14;
 }

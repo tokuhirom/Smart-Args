@@ -11,7 +11,6 @@ done_testing;
 exit;
 
 sub foo {
-    my $foo; # XXX
-    args $foo => 'Int';
+    args my $foo => 'Int';
     $foo*2;
 }

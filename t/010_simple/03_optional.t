@@ -12,9 +12,7 @@ done_testing;
 exit;
 
 sub foo {
-    my $p;
-    my $q; # XXX
-    args $p => { is => 'Int', optional => 1 },
-         $q => { is => 'Int', };
+    args my $p => { is => 'Int', optional => 1 },
+         my $q => { is => 'Int', };
     return $p ? $p : $q;
 }

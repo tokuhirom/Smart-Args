@@ -9,15 +9,13 @@ use Test::Exception;
     use Mouse;
     use args;
     sub class_method {
-	my ($class, $ppp);
-	args $class,
-	     $ppp => 'Str';
+	args my $class,
+	     my $ppp => 'Str';
 	return "CLASS_METHOD: $class, $ppp";
     }
     sub instance_method {
-	my ($self, $ppp);
-	args $self,
-	     $ppp => 'Str';
+	args my $self,
+	     my $ppp => 'Str';
 	return sprintf("INSTANCE_METHOD: %s, $ppp", ref($self));
     }
 }
