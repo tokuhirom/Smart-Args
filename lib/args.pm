@@ -73,8 +73,8 @@ sub compile_rule {
         +{ type => find_type_constraint($rule) };
     } else {
         my $ret = +{ };
-        if ($rule->{is}) {
-            $ret->{type} = find_type_constraint($rule->{is});
+        if ($rule->{isa}) {
+            $ret->{type} = find_type_constraint($rule->{isa});
         }
         for my $key (qw/optional default/) {
 	    if (exists $rule->{$key}) {
@@ -102,13 +102,13 @@ args - proof of concept
 
   sub func2 {
     args my $p => 'Int',
-         my $q => { is => 'Int', optional => 1 };
+         my $q => { isa => 'Int', optional => 1 };
   }
   func2(p => 3, q => 4); # p => 3, q => 4
   func2(p => 3);         # p => 3, q => undef
 
   sub func3 {
-    args my $p => {is => 'Int', default => 3},
+    args my $p => {isa => 'Int', default => 3},
   }
   func3(p => 4); # p => 4
   func3();       # p => 4
