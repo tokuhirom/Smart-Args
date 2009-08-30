@@ -14,21 +14,21 @@ our @EXPORT = qw/args/;
 
 sub args {
     my @args = do {
-	package DB;
-	my @c = caller(1);
-	@DB::args;
+        package DB;
+        my @c = caller(1);
+        @DB::args;
     };
 
     my $offset = 0;
     if (@_%2 == 1) {
-	my $first_arg = var_name(1, \$_[0]);
-	if ($first_arg eq '$class') {
-	    $_[0] = shift @args;
-	    $offset++;
-	} elsif ( $first_arg eq '$self') {
-	    $_[0] = shift @args;
-	    $offset++;
-	}
+        my $first_arg = var_name(1, \$_[0]);
+        if ($first_arg eq '$class') {
+            $_[0] = shift @args;
+            $offset++;
+        } elsif ( $first_arg eq '$self') {
+            $_[0] = shift @args;
+            $offset++;
+        }
     }
 
     my $args = do {
@@ -38,8 +38,8 @@ sub args {
             if (@args%2 == 0) {
                 +{@args};
             } else {
-		### @args
-		Carp::croak("oops");
+                ### @args
+                Carp::croak("oops");
             }
         }
     };
@@ -49,7 +49,7 @@ sub args {
         my $var_name = var_name(1,\$_[$i]);
         assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
-	assert($name);
+        assert($name);
         if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {
             Carp::croak("missing mandatory parameter named '$var_name'");
         }
@@ -58,9 +58,9 @@ sub args {
                 Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
-	if (!exists $args->{$name} && exists $rule->{default}) {
-	    $args->{$name} = $rule->{default};
-	}
+        if (!exists $args->{$name} && exists $rule->{default}) {
+            $args->{$name} = $rule->{default};
+        }
         $_[$i] = $args->{$name};
     }
 }
@@ -77,9 +77,9 @@ sub compile_rule {
             $ret->{type} = find_type_constraint($rule->{isa});
         }
         for my $key (qw/optional default/) {
-	    if (exists $rule->{$key}) {
-		$ret->{$key} = $rule->{$key};
-	    }
+            if (exists $rule->{$key}) {
+                $ret->{$key} = $rule->{$key};
+            }
         }
         return $ret;
     }
