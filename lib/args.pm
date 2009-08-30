@@ -34,7 +34,8 @@ sub args {
     my $args = do {
         if (ref $args[0] && @args == 1) {
             $args[0];
-        } else {
+        }
+        else {
             if (@args%2 == 0) {
                 +{@args};
             } else {
@@ -45,7 +46,7 @@ sub args {
     };
 
     for (my $i=$offset; $i<@_; $i+=2) {
-        my $rule = compile_rule($_[$i+1]);
+        my $rule     = compile_rule($_[$i+1]);
         my $var_name = var_name(1,\$_[$i]);
         assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
@@ -68,10 +69,12 @@ sub args {
 sub compile_rule {
     my ($rule) = @_;
     if (!defined $rule) {
-        return +{ }
-    } if (!ref $rule) {
-        +{ type => find_type_constraint($rule) };
-    } else {
+        return +{ };
+    }
+    else if (!ref $rule) { # single, non-ref parameter is a type name
+        return +{ type => find_type_constraint($rule) };
+    }
+    else {
         my $ret = +{ };
         if ($rule->{isa}) {
             $ret->{type} = find_type_constraint($rule->{isa});
