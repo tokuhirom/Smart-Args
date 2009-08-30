@@ -20,14 +20,14 @@ sub args {
     };
 
     my $offset = 0;
-    if (@_%2 == 1) {
+    if (@_%2 == 1) { # args my $self, my $arg => { ... }
         my $first_arg = var_name(1, \$_[0]);
-        if ($first_arg eq '$class') {
+        if ($first_arg eq '$class' or $first_arg eq '$self') {
             $_[0] = shift @args;
             $offset++;
-        } elsif ( $first_arg eq '$self') {
-            $_[0] = shift @args;
-            $offset++;
+        }
+        else {
+            ### @args
         }
     }
 
