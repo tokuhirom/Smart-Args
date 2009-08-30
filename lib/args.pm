@@ -71,7 +71,7 @@ sub compile_rule {
     if (!defined $rule) {
         return +{ };
     }
-    else if (!ref $rule) { # single, non-ref parameter is a type name
+    elsif (!ref $rule) { # single, non-ref parameter is a type name
         return +{ type => find_type_constraint($rule) };
     }
     else {
