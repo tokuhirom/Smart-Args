@@ -3,7 +3,6 @@ use strict;
 use warnings;
 our $VERSION = '0.01';
 use Exporter 'import';
-use Carp::Assert;
 use PadWalker qw/var_name/;
 
 use Any::Moose;
@@ -47,9 +46,9 @@ sub args {
     for (my $i=$offset; $i<@_; $i+=2) {
         my $rule = compile_rule($_[$i+1]);
         my $var_name = var_name(1,\$_[$i]);
-        assert($var_name);
+        # assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
-	assert($name);
+        # assert($name);
         if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {
             Carp::croak("missing mandatory parameter named '$var_name'");
         }
