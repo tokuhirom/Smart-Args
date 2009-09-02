@@ -2,10 +2,10 @@ use inc::Module::Install;
 name 'args';
 all_from 'lib/args.pm';
 
-requires 'PadWalker';
-requires 'Any::Moose';
-requires 'Carp::Assert';
-requires 'Scalar::Util' => 1.21; # old version has bug.
+requires 'PadWalker'    => 1.9;
+requires 'Any::Moose'   => 0.10;
+requires 'Carp::Assert' => 0.20;
+requires 'Scalar::Util' => 1.21;    # old version has bug.
 
 tests('t/*.t t/*/*.t t/*/*/*.t');
 author_tests 'xt';
