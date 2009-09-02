@@ -13,38 +13,39 @@ our @EXPORT = qw/args/;
 
 sub args {
     my @args = do {
-	package DB;
-	my @c = caller(1);
-	@DB::args;
+        package DB;
+        my @c = caller(1);
+        @DB::args;
     };
 
     my $offset = 0;
-    if (@_%2 == 1) {
-	my $first_arg = var_name(1, \$_[0]);
-	if ($first_arg eq '$class') {
-	    $_[0] = shift @args;
-	    $offset++;
-	} elsif ( $first_arg eq '$self') {
-	    $_[0] = shift @args;
-	    $offset++;
-	}
+    if (@_%2 == 1) { # args my $self, my $arg => { ... }
+        my $first_arg = var_name(1, \$_[0]);
+        if ($first_arg eq '$class' or $first_arg eq '$self') {
+            $_[0] = shift @args;
+            $offset++;
+        }
+        else {
+            ### @args
+        }
     }
 
     my $args = do {
         if (ref $args[0] && @args == 1) {
             $args[0];
-        } else {
+        }
+        else {
             if (@args%2 == 0) {
                 +{@args};
             } else {
-		### @args
-		Carp::croak("oops");
+                ### @args
+                Carp::croak("oops");
             }
         }
     };
 
     for (my $i=$offset; $i<@_; $i+=2) {
-        my $rule = compile_rule($_[$i+1]);
+        my $rule     = compile_rule($_[$i+1]);
         my $var_name = var_name(1,\$_[$i]);
         # assert($var_name);
         (my $name = $var_name) =~ s/^\$//;
@@ -57,9 +58,9 @@ sub args {
                 Carp::croak($rule->{type}->get_message($args->{$name}));
             }
         }
-	if (!exists $args->{$name} && exists $rule->{default}) {
-	    $args->{$name} = $rule->{default};
-	}
+        if (!exists $args->{$name} && exists $rule->{default}) {
+            $args->{$name} = $rule->{default};
+        }
         $_[$i] = $args->{$name};
     }
 }
@@ -67,18 +68,20 @@ sub args {
 sub compile_rule {
     my ($rule) = @_;
     if (!defined $rule) {
-        return +{ }
-    } if (!ref $rule) {
-        +{ type => find_type_constraint($rule) };
-    } else {
+        return +{ };
+    }
+    elsif (!ref $rule) { # single, non-ref parameter is a type name
+        return +{ type => find_type_constraint($rule) };
+    }
+    else {
         my $ret = +{ };
         if ($rule->{isa}) {
             $ret->{type} = find_type_constraint($rule->{isa});
         }
         for my $key (qw/optional default/) {
-	    if (exists $rule->{$key}) {
-		$ret->{$key} = $rule->{$key};
-	    }
+            if (exists $rule->{$key}) {
+                $ret->{$key} = $rule->{$key};
+            }
         }
         return $ret;
     }
