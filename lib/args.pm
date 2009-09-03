@@ -25,6 +25,7 @@ sub args {
     # method call
     if(exists $is_invocant{ var_name(1, \$_[0]) || '' }){
         $_[0] = shift @DB::args;
+        shift;
         # XXX: should we provide ways to check the type of invocant?
     }
 
@@ -40,36 +41,38 @@ sub args {
     #         undef   defined
 
     for(my $i = 0; $i < @_; $i++){
-        if(!defined($_[$i])){
-            (my $name = var_name(1, \$_[$i]))
-                or  Carp::croak('usage: args my $var => TYPE, ...');
 
-            $name =~ s/^\$//;
+        (my $name = var_name(1, \$_[$i]))
+            or  Carp::croak('usage: args my $var => TYPE, ...');
 
-            my $rule = _compile_rule($_[$i+1]);
+        ### $i
+        ### $name
 
-            if(exists $args->{$name}){
-                if(my $tc = $rule->{type} ){
-                    if(!$tc->check($args->{$name})){
-                        Carp::croak($tc->get_message($args->{$name}));
-                    }
+        $name =~ s/^\$//;
+
+        my $rule = _compile_rule($_[$i+1]);
+
+        if(exists $args->{$name}){
+            if(my $tc = $rule->{type} ){
+                if(!$tc->check($args->{$name})){
+                    Carp::croak($tc->get_message($args->{$name}));
                 }
+            }
 
-                $_[$i] = $args->{$name};
+            $_[$i] = $args->{$name};
+        }
+        else{
+            if(exists $rule->{default}){
+                $_[$i] = $rule->{default};
+            }
+            elsif(!exists $rule->{optional}){
+                Carp::croak("missing mandatory parameter named '\$$name'");
             }
             else{
-                if(exists $rule->{default}){
-                    $_[$i] = $rule->{default};
-                }
-                elsif(!exists $rule->{optional}){
-                    Carp::croak("missing mandatory parameter named '\$$name'");
-                }
-                else{
-                    # noop
-                }
+                # noop
             }
-            $i++ if defined $_[$i+1]; # discard type info
         }
+        $i++ if defined $_[$i+1]; # discard type info
     }
 }
 
@@ -85,7 +88,7 @@ sub _compile_rule {
     else {
         my %ret;
         if ($rule->{isa}) {
-            my $tc = _get_type_constraint($rule) or Carp::croak("cannot find type constraint '$rule'");
+            my $tc = _get_type_constraint($rule->{isa}) or Carp::croak("cannot find type constraint '$rule'");
             $ret{type} = $tc;
         }
         for my $key (qw/optional default/) {
