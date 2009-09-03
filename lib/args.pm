@@ -7,83 +7,93 @@ use PadWalker qw/var_name/;
 
 use Any::Moose;
 use Any::Moose '::Util::TypeConstraints';
-*find_type_constraint = any_moose('::Util::TypeConstraints')->can('find_type_constraint');
+
+*_get_type_constraint = any_moose('::Util::TypeConstraints')->can('find_or_create_isa_type_constraint');
 
 our @EXPORT = qw/args/;
 
-sub args {
-    my @args = do {
-        package DB;
-        () = caller(1); # it requires list context, but does not use return values
-        @DB::args;
-    };
+my %is_invocant = map{ $_ => undef } qw($self $class);
 
-    my $offset = 0;
-    if (@_%2 == 1) { # args my $self, my $arg => { ... }
-        my $first_arg = var_name(1, \$_[0]);
-        if ($first_arg eq '$class' or $first_arg eq '$self') {
-            $_[0] = shift @args;
-            $offset++;
-        }
-        else {
-            ### @args
-        }
+sub args {
+    {
+        package DB;
+        # call of caller in DB package sets @DB::args,
+        # which requires list context, but does not use return values
+        () = caller(1);
     }
 
-    my $args = do {
-        if (ref $args[0] && @args == 1) {
-            $args[0];
-        }
-        else {
-            if (@args%2 == 0) {
-                +{@args};
-            } else {
-                ### @args
-                Carp::croak("oops");
-            }
-        }
-    };
+    # method call
+    if(exists $is_invocant{ var_name(1, \$_[0]) || '' }){
+        $_[0] = shift @DB::args;
+        # XXX: should we provide ways to check the type of invocant?
+    }
 
-    for (my $i=$offset; $i<@_; $i+=2) {
-        my $rule     = compile_rule($_[$i+1]);
-        my $var_name = var_name(1,\$_[$i]);
-        # assert($var_name);
-        (my $name = $var_name) =~ s/^\$//;
-        # assert($name);
-        if (! exists $args->{$name} && ! $rule->{optional} && !$rule->{default}) {
-            Carp::croak("missing mandatory parameter named '$var_name'");
-        }
-        if (exists $args->{$name} && defined $rule->{type}) {
-            unless ($rule->{type}->check($args->{$name})) {
-                Carp::croak($rule->{type}->get_message($args->{$name}));
+    my $args = ( @DB::args == 1 && ref($DB::args[0]) )
+            ?    $DB::args[0]  # must be hash
+            : +{ @DB::args };  # must be key-value list
+
+    ### $args
+    ### @_
+
+    # args my $var => TYPE
+    #         ~~~~    ~~~~
+    #         undef   defined
+
+    for(my $i = 0; $i < @_; $i++){
+        if(!defined($_[$i])){
+            (my $name = var_name(1, \$_[$i]))
+                or  Carp::croak('usage: args my $var => TYPE, ...');
+
+            $name =~ s/^\$//;
+
+            my $rule = _compile_rule($_[$i+1]);
+
+            if(exists $args->{$name}){
+                if(my $tc = $rule->{type} ){
+                    if(!$tc->check($args->{$name})){
+                        Carp::croak($tc->get_message($args->{$name}));
+                    }
+                }
+
+                $_[$i] = $args->{$name};
             }
+            else{
+                if(exists $rule->{default}){
+                    $_[$i] = $rule->{default};
+                }
+                elsif(!exists $rule->{optional}){
+                    Carp::croak("missing mandatory parameter named '\$$name'");
+                }
+                else{
+                    # noop
+                }
+            }
+            $i++ if defined $_[$i+1]; # discard type info
         }
-        if (!exists $args->{$name} && exists $rule->{default}) {
-            $args->{$name} = $rule->{default};
-        }
-        $_[$i] = $args->{$name};
     }
 }
 
-sub compile_rule {
+sub _compile_rule {
     my ($rule) = @_;
     if (!defined $rule) {
         return +{ };
     }
     elsif (!ref $rule) { # single, non-ref parameter is a type name
-        return +{ type => find_type_constraint($rule) };
+        my $tc = _get_type_constraint($rule) or Carp::croak("cannot find type constraint '$rule'");
+        return +{ type => $tc };
     }
     else {
-        my $ret = +{ };
+        my %ret;
         if ($rule->{isa}) {
-            $ret->{type} = find_type_constraint($rule->{isa});
+            my $tc = _get_type_constraint($rule) or Carp::croak("cannot find type constraint '$rule'");
+            $ret{type} = $tc;
         }
         for my $key (qw/optional default/) {
             if (exists $rule->{$key}) {
-                $ret->{$key} = $rule->{$key};
+                $ret{$key} = $rule->{$key};
             }
         }
-        return $ret;
+        return \%ret;
     }
 }
 
