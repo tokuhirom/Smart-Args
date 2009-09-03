@@ -14,7 +14,7 @@ our @EXPORT = qw/args/;
 sub args {
     my @args = do {
         package DB;
-        my @c = caller(1);
+        () = caller(1); # it requires list context, but does not use return values
         @DB::args;
     };
 
