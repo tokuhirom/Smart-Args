@@ -1,4 +1,9 @@
 Revision history for Perl extension args
 
+0.01_02
+
+    - Types becomes optional: args my $x, my $y => 'Str'; # $x can be anything but required(gfx)
+    - Parameterized types are allowd; args my $x => "ArrayRef[Int]";(gfx)
+
 0.01_01
     - original version
