@@ -92,15 +92,11 @@ __END__
 
 =head1 NAME
 
-args - proof of concept
+args - argument validation for you
 
 =head1 SYNOPSIS
 
   use args;
-  sub func {
-    argsp my $p => 'Int';
-  }
-  func(3);
 
   sub func2 {
     args my $p => 'Int',
@@ -133,7 +129,8 @@ args - proof of concept
 
 =head1 DESCRIPTION
 
-args is
+args is yet another argument validation library.
+This module makes your module more readable, and writable =)
 
 =head1 TODO
 
@@ -145,7 +142,7 @@ Tokuhiro Matsuno E<lt>tokuhirom  slkjfd gmail.comE<gt>
 
 =head1 SEE ALSO
 
-L<http://rt.cpan.org/Public/Bug/Display.html?id=48944>
+L<Params::Validate>
 
 =head1 LICENSE
 
