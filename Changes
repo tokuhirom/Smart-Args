@@ -1,5 +1,11 @@
 Revision history for Perl extension args
 
+0.02
+
+    - fixed various testing issue
+    - depend to latest Mouse
+    - depend to latest PadWalker
+
 0.01_02
 
     - Types becomes optional: args my $x, my $y => 'Str'; # $x can be anything but required(gfx)

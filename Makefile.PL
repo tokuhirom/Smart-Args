@@ -2,7 +2,7 @@ use inc::Module::Install;
 name 'args';
 all_from 'lib/args.pm';
 
-requires 'PadWalker'    => 1.9;
+requires 'PadWalker'    => 1.91;
 requires 'Mouse'        => 0.62;
 requires 'Scalar::Util' => 1.21;    # old version has bug.
 
