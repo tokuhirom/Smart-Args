@@ -5,10 +5,10 @@ our $VERSION = '0.01_02';
 use Exporter 'import';
 use PadWalker qw/var_name/;
 
-use Any::Moose;
-use Any::Moose '::Util::TypeConstraints';
+use Mouse;
+use Mouse::Util::TypeConstraints;
 
-*_get_type_constraint = any_moose('::Util::TypeConstraints')->can('find_or_create_isa_type_constraint');
+*_get_type_constraint = Mouse::Util::TypeConstraints->can('find_or_create_isa_type_constraint');
 
 our @EXPORT = qw/args/;
 

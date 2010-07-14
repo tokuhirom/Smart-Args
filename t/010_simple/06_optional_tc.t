@@ -6,7 +6,7 @@ use Test::Exception;
 
 {
     package Foo;
-    use Any::Moose;
+    use Mouse;
     use args;
 
     sub bar{
