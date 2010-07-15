@@ -18,7 +18,7 @@ sub args {
         package DB;
         # call of caller in DB package sets @DB::args,
         # which requires list context, but does not use return values
-        () = caller(1);
+        () = CORE::caller(1);
     }
 
     # method call
