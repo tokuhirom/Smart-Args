@@ -1,6 +1,6 @@
 use inc::Module::Install;
-name 'args';
-all_from 'lib/args.pm';
+name 'Smart-Args';
+all_from 'lib/Smart/Args.pm';
 
 requires 'PadWalker'    => 1.9;
 requires 'Mouse'        => 0.62;

@@ -1,13 +1,13 @@
 use strict;
 use warnings;
-use args;
+use Smart::Args;
 use Test::More;
 use Test::Exception;
 
 {
     package Foo;
     use Mouse;
-    use args;
+    use Smart::Args;
     sub class_method {
 	args my $class,
 	     my $ppp => 'Str';

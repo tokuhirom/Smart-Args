@@ -1,13 +1,13 @@
 use strict;
 use warnings;
-use args;
+use Smart::Args;
 use Test::More;
 use Test::Exception;
 
 {
     package Foo;
     use Mouse;
-    use args;
+    use Smart::Args;
 
     sub bar{
         args my $self, my $x, my $y => 'Int'; # omit to set the type of $x

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use args;
+use Smart::Args;
 use Test::More;
 
 foo( pi => 3.14 );

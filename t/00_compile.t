@@ -1,4 +1,4 @@
 use strict;
 use Test::More tests => 1;
 
-BEGIN { use_ok 'args' }
+BEGIN { use_ok 'Smart::Args' }

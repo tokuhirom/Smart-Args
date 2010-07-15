@@ -1,14 +1,13 @@
-package args;
+package Smart::Args;
 use strict;
 use warnings;
 our $VERSION = '0.02';
 use Exporter 'import';
 use PadWalker qw/var_name/;
 
-use Mouse;
 use Mouse::Util::TypeConstraints;
 
-*_get_type_constraint = Mouse::Util::TypeConstraints->can('find_or_create_isa_type_constraint');
+*_get_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint;
 
 our @EXPORT = qw/args/;
 
@@ -105,11 +104,11 @@ __END__
 
 =head1 NAME
 
-args - argument validation for you
+Smart::Args - argument validation for you
 
 =head1 SYNOPSIS
 
-  use args;
+  use Smart::Args;
 
   sub func2 {
     args my $p => 'Int',
@@ -126,6 +125,8 @@ args - argument validation for you
 
   package F;
   use Moose;
+  use Smart::Args;
+
   sub method {
     args my $self,
          my $p => 'Int';
@@ -142,7 +143,7 @@ args - argument validation for you
 
 =head1 DESCRIPTION
 
-args is yet another argument validation library.
+Smart::Args is yet another argument validation library.
 This module makes your module more readable, and writable =)
 
 =head1 TODO
