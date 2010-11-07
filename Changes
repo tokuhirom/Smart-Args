@@ -5,7 +5,7 @@ Revision history for Perl extension args
     - Invocants can have type rules (gfx):
         e.g. args my $class => 'ClassName';
          and args my $self  => 'Object';
-    - Types can be a type constraint object (gfx):
+    - Types can be a type constraint object of both Mouse and Moose (gfx):
         my $MyInt = subtype 'MyInt', as 'Int';
         args my $foo => $MyInt; # OK
     - If a type has a coercion, it is automatically applied (gfx)
