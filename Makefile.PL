@@ -10,7 +10,6 @@ tests('t/*.t t/*/*.t t/*/*/*.t');
 author_tests 'xt';
 
 auto_set_repository;
-build_requires 'Test::More';
-use_test_base;
+test_requires 'Test::More';
 auto_include;
 WriteAll;
