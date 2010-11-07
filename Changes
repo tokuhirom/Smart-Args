@@ -1,5 +1,16 @@
 Revision history for Perl extension args
 
+0.04
+
+    - Invocants can have type rules (gfx):
+        e.g. args my $class => 'ClassName';
+         and args my $self  => 'Object';
+    - Types can be a type constraint object (gfx):
+        my $MyInt = subtype 'MyInt', as 'Int';
+        args my $foo => $MyInt; # OK
+    - If a type has a coercion, it is automatically applied (gfx)
+    - Performance are improved, esp. where no type rules are specified (gfx)
+
 0.03
 
     - renamed package from args.pm to Smart::Args.
