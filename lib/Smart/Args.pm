@@ -21,11 +21,19 @@ sub args {
         () = CORE::caller(1);
     }
 
-    # method call, ignoring $self and $class
-    if(exists $is_invocant{ var_name(1, \$_[0]) || '' }){
-        $_[0] = shift @DB::args;
-        shift;
-        # XXX: should we provide ways to check the type of invocant?
+    my $start = 0;
+
+    if(@_) {
+        my $name = var_name(1, \$_[0]) || '';
+        if(exists $is_invocant{ $name }){ # seems method call
+            $_[0] = shift @DB::args; # set the invocant
+            if(defined $_[1]) { # has rule?
+                $name =~ s/^\$//;
+                $_[0] = _validate_by_rule({ $name => $_[0] }, $name, $_[1]);
+                $start++;
+            }
+            $start++;
+        }
     }
 
     my $args = ( @DB::args == 1 && ref($DB::args[0]) )
@@ -39,7 +47,7 @@ sub args {
     #         ~~~~    ~~~~
     #         undef   defined
 
-    for(my $i = 0; $i < @_; $i++){
+    for(my $i = $start; $i < @_; $i++){
 
         (my $name = var_name(1, \$_[$i]))
             or  Carp::croak('usage: args my $var => TYPE, ...');
