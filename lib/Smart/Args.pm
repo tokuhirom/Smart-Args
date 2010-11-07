@@ -21,8 +21,6 @@ sub args {
         () = CORE::caller(1);
     }
 
-    my $start = 0;
-
     if(@_) {
         my $name = var_name(1, \$_[0]) || '';
         if(exists $is_invocant{ $name }){ # seems method call
@@ -30,9 +28,9 @@ sub args {
             if(defined $_[1]) { # has rule?
                 $name =~ s/^\$//;
                 $_[0] = _validate_by_rule({ $name => $_[0] }, $name, $_[1]);
-                $start++;
+                shift;
             }
-            $start++;
+            shift;
         }
     }
 
@@ -47,7 +45,7 @@ sub args {
     #         ~~~~    ~~~~
     #         undef   defined
 
-    for(my $i = $start; $i < @_; $i++){
+    for(my $i = 0; $i < @_; $i++){
 
         (my $name = var_name(1, \$_[$i]))
             or  Carp::croak('usage: args my $var => TYPE, ...');
@@ -69,18 +67,20 @@ sub args {
     }
 }
 
+# rule: $type or +{ isa => $type, optional => $bool, default => $default }
 sub _validate_by_rule {
     my($args, $name, $basic_rule) = @_;
 
     # compile the rule
-    my %rule;
+    my $rule;
     my $type;
+    my $mandatory = 1; # all the arguments are mandatory by default
     if(ref($basic_rule) eq 'HASH') {
-        # rule: { isa => $type, optiona => $bool, default => $default }
-        %rule = %{$basic_rule};
-        if ($basic_rule->{isa}) {
+        $rule = $basic_rule;
+        if (defined $basic_rule->{isa}) {
             $type = _get_type_constraint($basic_rule->{isa});
         }
+        $mandatory = !$rule->{optional};
     }
     else {
         # $rule is a type constraint name or type constraint object
@@ -97,15 +97,15 @@ sub _validate_by_rule {
             }
         }
     }
-    else{
-        if(exists $rule{default}){
-            $value = $rule{default};
+    else {
+        if(defined($rule) and exists $rule->{default}){
+            $value = $rule->{default};
         }
-        elsif(!$rule{optional}){
+        elsif($mandatory){
             Carp::croak("missing mandatory parameter named '\$$name'");
         }
         else{
-            # noop
+            # no default, and not mandatory; noop
         }
     }
     return $value;

@@ -23,6 +23,11 @@ sub sa_add {
     return $x + $y;
 }
 
+sub sa_isa_add {
+    args my $x => { isa => 'Value' }, my $y => { isa => 'Value' };
+    return $x + $y;
+}
+
 print "with type constraints: SCALAR / Value\n";
 cmpthese -1, {
     'P::Validate' => sub {
@@ -34,6 +39,12 @@ cmpthese -1, {
     'S::Args' => sub {
         foreach my $i(1 .. 100) {
             my $x = sa_add({ x => $i, y => $i });
+            $x == ($i * 2) or die $x;
+        }
+    },
+    'S::Args/isa' => sub {
+        foreach my $i(1 .. 100) {
+            my $x = sa_isa_add({ x => $i, y => $i });
             $x == ($i * 2) or die $x;
         }
     },
