@@ -80,21 +80,20 @@ sub _compile_rule {
     if (!defined $rule) {
         return +{ };
     }
-    elsif (!ref $rule) { # single, non-ref parameter is a type name
-        my $tc = _get_type_constraint($rule);
-        return +{ type => $tc };
-    }
-    elsif(ref($rule) eq 'HASH') {
+
+    my %ret;
+    if(ref($rule) eq 'HASH') {
         # rule: { isa => $type, optiona => $bool, default => $default }
-        my %ret = %{$rule};
+        %ret = %{$rule};
         if ($rule->{isa}) {
             $ret{type} = _get_type_constraint($rule->{isa});
         }
-        return \%ret;
     }
-    else { # assumes $rule is a type constraint object
-        return +{ type => $rule };
+    else {
+        # $rule is a type constraint name or type constraint object
+        $ret{type} = _get_type_constraint($rule);
     }
+    return \%ret;
 }
 
 1;
