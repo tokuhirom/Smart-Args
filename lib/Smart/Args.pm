@@ -152,7 +152,7 @@ Smart::Args - argument validation for you
          my $p => 'Int';
   }
   sub class_method {
-    args my $class,
+    args my $class => 'ClassName',
          my $p => 'Int';
   }
 
