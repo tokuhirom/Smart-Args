@@ -52,13 +52,12 @@ sub args {
         my $rule = _compile_rule($_[$i+1]);
 
         if(exists $args->{$name}){
+            $_[$i] = $args->{$name};
             if(my $tc = $rule->{type} ){
-                if(!$tc->check($args->{$name})){
-                    Carp::croak($tc->get_message($args->{$name}));
+                if(!$tc->check($_[$i])){
+                    _try_coercion_or_die($tc, \$_[$i]);
                 }
             }
-
-            $_[$i] = $args->{$name};
         }
         else{
             if(exists $rule->{default}){
@@ -96,6 +95,15 @@ sub _compile_rule {
     return \%ret;
 }
 
+sub _try_coercion_or_die {
+    my($tc, $slot_ref) = @_;
+
+    if($tc->has_coercion) {
+        ${$slot_ref} = $tc->coerce(${$slot_ref});
+        $tc->check(${$slot_ref}) and return;
+    }
+    Carp::croak($tc->get_message(${$slot_ref}));
+}
 1;
 __END__
 
