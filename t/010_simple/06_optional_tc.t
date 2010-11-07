@@ -35,6 +35,6 @@ throws_ok{
 
 throws_ok{
     $foo->bar(y => 10,);
-} qr/missing mandatory parameter/;
+} qr/missing mandatory parameter named '\$x'/;
 
 done_testing;

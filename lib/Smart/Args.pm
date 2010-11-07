@@ -44,64 +44,71 @@ sub args {
         (my $name = var_name(1, \$_[$i]))
             or  Carp::croak('usage: args my $var => TYPE, ...');
 
-        ### $i
-        ### $name
-
         $name =~ s/^\$//;
 
-        my $rule = _compile_rule($_[$i+1]);
-
-        if(exists $args->{$name}){
-            $_[$i] = $args->{$name};
-            if(my $tc = $rule->{type} ){
-                if(!$tc->check($_[$i])){
-                    _try_coercion_or_die($tc, \$_[$i]);
-                }
-            }
+        # with rule  (my $foo => $rule, ...)
+        if(defined $_[ $i + 1 ]) {
+            $_[$i] = _validate_by_rule($args, $name, $_[$i + 1]);
+            $i++;
         }
-        else{
-            if(exists $rule->{default}){
-                $_[$i] = $rule->{default};
-            }
-            elsif(!exists $rule->{optional}){
+        # without rule (my $foo, my $bar, ...)
+        else {
+            if(!exists $args->{$name}) { # parameters are mandatory by default
                 Carp::croak("missing mandatory parameter named '\$$name'");
             }
-            else{
-                # noop
-            }
+            $_[$i] = $args->{$name};
         }
-        $i++ if defined $_[$i+1]; # discard type info
     }
 }
 
-sub _compile_rule {
-    my ($rule) = @_;
-    my %ret;
-    if (!defined $rule) {
-        # noop; no rule specified
-    }
-    elsif(ref($rule) eq 'HASH') {
+sub _validate_by_rule {
+    my($args, $name, $basic_rule) = @_;
+
+    # compile the rule
+    my %rule;
+    if(ref($basic_rule) eq 'HASH') {
         # rule: { isa => $type, optiona => $bool, default => $default }
-        %ret = %{$rule};
-        if ($rule->{isa}) {
-            $ret{type} = _get_type_constraint($rule->{isa});
+        %rule = %{$basic_rule};
+        if ($basic_rule->{isa}) {
+            $rule{type} = _get_type_constraint($basic_rule->{isa});
         }
     }
     else {
         # $rule is a type constraint name or type constraint object
-        $ret{type} = _get_type_constraint($rule);
+        $rule{type} = _get_type_constraint($basic_rule);
     }
-    return \%ret;
+
+    my $value = $args->{$name};
+
+    # validate the value by the rule
+    if(exists $args->{$name}){
+        if(my $tc = $rule{type} ){
+            if(!$tc->check($value)){
+                $value = _try_coercion_or_die($tc, $value);
+            }
+        }
+    }
+    else{
+        if(exists $rule{default}){
+            $value = $rule{default};
+        }
+        elsif(!$rule{optional}){
+            Carp::croak("missing mandatory parameter named '\$$name'");
+        }
+        else{
+            # noop
+        }
+    }
+    return $value;
 }
 
 sub _try_coercion_or_die {
-    my($tc, $slot_ref) = @_;
-
+    my($tc, $value) = @_;
     if($tc->has_coercion) {
-        ${$slot_ref} = $tc->coerce(${$slot_ref});
-        $tc->check(${$slot_ref}) and return;
+        $value = $tc->coerce($value);
+        $tc->check($value) and return $value;
     }
-    Carp::croak($tc->get_message(${$slot_ref}));
+    Carp::croak($tc->get_message($value));
 }
 1;
 __END__
@@ -157,7 +164,7 @@ This module makes your module more readable, and writable =)
 
 Checks arguments and fills them into lexical variables.
 
-The agruments consist of a lexical <$var> and an optional I<$rule>.
+The arguments consist of a lexical <$var> and an optional I<$rule>.
 
 I<$rule> can be a type name (e.g. C<Int>), a HASH reference (with 
 C<type>, C<default>, and C<optional>), or a type constraint object.
