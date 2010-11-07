@@ -143,6 +143,21 @@ Smart::Args - argument validation for you
 Smart::Args is yet another argument validation library.
 This module makes your module more readable, and writable =)
 
+=head1 FUNCTIONS
+
+=head2 C<args ...>
+
+Checks arguments and fills them into lexical variables.
+
+See the SYNOPSIS section.
+
+=head1 TYPES
+
+The types that C<Smart::Args> uses are type constraints of C<Mouse>.
+That is, you can define your types with the way Mouse does.
+
+See L<Mouse::Util::TypeConstraints> for details.
+
 =head1 TODO
 
 coercion support?
