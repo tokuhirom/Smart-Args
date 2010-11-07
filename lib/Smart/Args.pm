@@ -74,25 +74,26 @@ sub _validate_by_rule {
 
     # compile the rule
     my %rule;
+    my $type;
     if(ref($basic_rule) eq 'HASH') {
         # rule: { isa => $type, optiona => $bool, default => $default }
         %rule = %{$basic_rule};
         if ($basic_rule->{isa}) {
-            $rule{type} = _get_type_constraint($basic_rule->{isa});
+            $type = _get_type_constraint($basic_rule->{isa});
         }
     }
     else {
         # $rule is a type constraint name or type constraint object
-        $rule{type} = _get_type_constraint($basic_rule);
+        $type = _get_type_constraint($basic_rule);
     }
 
     my $value = $args->{$name};
 
     # validate the value by the rule
     if(exists $args->{$name}){
-        if(my $tc = $rule{type} ){
-            if(!$tc->check($value)){
-                $value = _try_coercion_or_die($tc, $value);
+        if(defined $type ){
+            if(!$type->check($value)){
+                $value = _try_coercion_or_die($type, $value);
             }
         }
     }
