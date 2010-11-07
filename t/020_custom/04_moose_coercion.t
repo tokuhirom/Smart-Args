@@ -1,11 +1,12 @@
 #!perl-w
 use strict;
+use Test::Requires { 'Moose' => 1.19 };
 use Test::More;
 use Test::Exception;
 use Smart::Args;
-use Mouse::Util::TypeConstraints;
+use Moose::Util::TypeConstraints;
 
-subtype 'MyHashRef', as 'HashRef';
+my $MyHashRef = subtype 'MyHashRef', as 'HashRef';
 
 coerce 'MyHashRef',
     from 'ArrayRef', via {
@@ -14,7 +15,7 @@ coerce 'MyHashRef',
 ;
 
 sub foo {
-    args my $h => 'MyHashRef';
+    args my $h => $MyHashRef;
     return $h;
 }
 
@@ -25,7 +26,7 @@ lives_and {
 
 throws_ok {
     foo(h => 42);
-} qr/Validation failed/;
+} qr/Validation failed for 'MyHashRef' with value 42/;
 
 done_testing;
 

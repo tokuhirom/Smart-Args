@@ -1,10 +1,10 @@
 use strict;
 use warnings;
-use Test::Requires qw(MouseX::Types);
+use Test::Requires { 'Moose' => 1.19, 'MooseX::Types' => 0.24 };
 use Smart::Args;
 use Test::More;
 use Test::Exception;
-use MouseX::Types::Mouse qw(Int);
+use MooseX::Types::Moose qw(Int);
 
 lives_ok { foo(foo => 3) }; # yutori is good
 is foo(foo => 3), 6;
