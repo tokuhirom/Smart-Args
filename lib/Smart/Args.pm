@@ -17,11 +17,11 @@ sub args {
     {
         package DB;
         # call of caller in DB package sets @DB::args,
-        # which requires list context, but does not use return values
+        # which requires list context, but we don't need return values
         () = CORE::caller(1);
     }
 
-    # method call
+    # method call, ignoring $self and $class
     if(exists $is_invocant{ var_name(1, \$_[0]) || '' }){
         $_[0] = shift @DB::args;
         shift;
@@ -35,7 +35,7 @@ sub args {
     ### $args
     ### @_
 
-    # args my $var => TYPE
+    # args my $var => RULE
     #         ~~~~    ~~~~
     #         undef   defined
 
@@ -76,12 +76,11 @@ sub args {
 
 sub _compile_rule {
     my ($rule) = @_;
-    if (!defined $rule) {
-        return +{ };
-    }
-
     my %ret;
-    if(ref($rule) eq 'HASH') {
+    if (!defined $rule) {
+        # noop; no rule specified
+    }
+    elsif(ref($rule) eq 'HASH') {
         # rule: { isa => $type, optiona => $bool, default => $default }
         %ret = %{$rule};
         if ($rule->{isa}) {
@@ -149,6 +148,7 @@ Smart::Args - argument validation for you
 =head1 DESCRIPTION
 
 Smart::Args is yet another argument validation library.
+
 This module makes your module more readable, and writable =)
 
 =head1 FUNCTIONS
@@ -162,13 +162,14 @@ See the SYNOPSIS section.
 =head1 TYPES
 
 The types that C<Smart::Args> uses are type constraints of C<Mouse>.
-That is, you can define your types with the way Mouse does.
+That is, you can define your types in the way Mouse does.
+
+In addition, C<Smart::Args> also allows Moose type constraint objects,
+so you can use any C<MooseX::Types::*> libraries on CPAN.
+
+Type coercions are automatically tried if validations fail.
 
 See L<Mouse::Util::TypeConstraints> for details.
-
-=head1 TODO
-
-coercion support?
 
 =head1 AUTHOR
 
