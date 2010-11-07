@@ -10,16 +10,20 @@ foreach my $mod (qw(Params::Validate Smart::Args)) {
 }
 
 sub pv_add {
-    my %args = validate( @_ => { x => 1, y => 1 } );
+    my %args = validate( @_ =>
+        {
+            x => { type => SCALAR },
+            y => { type => SCALAR },
+        });
     return $args{x} + $args{y};
 }
 
 sub sa_add {
-    args my $x, my $y;
+    args my $x => 'Value', my $y => 'Value';
     return $x + $y;
 }
 
-print "without type constraints\n";
+print "with type constraints: SCALAR / Value\n";
 cmpthese -1, {
     'P::Validate' => sub {
         foreach my $i(1 .. 100) {
@@ -34,3 +38,4 @@ cmpthese -1, {
         }
     },
 };
+
