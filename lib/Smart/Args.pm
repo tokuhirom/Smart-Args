@@ -171,14 +171,14 @@ This module makes your module more readable, and writable =)
 
 =head2 C<args my $var [, $rule], ...>
 
-Checks arguments and fills them into lexical variables.
+Checks parameters and fills them into lexical variables.
 
 The arguments consist of a lexical <$var> and an optional I<$rule>.
 
 I<$rule> can be a type name (e.g. C<Int>), a HASH reference (with
 C<type>, C<default>, and C<optional>), or a type constraint object.
 
-Note that is the first variable is named I<$class> or I<$self>, it
+Note that if the first variable is named I<$class> or I<$self>, it
 is dealt as a method call.
 
 See the SYNOPSIS section for examples.
