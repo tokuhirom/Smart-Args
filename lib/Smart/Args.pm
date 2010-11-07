@@ -5,7 +5,7 @@ our $VERSION = '0.03';
 use Exporter 'import';
 use PadWalker qw/var_name/;
 
-use Mouse::Util::TypeConstraints;
+use Mouse::Util::TypeConstraints ();
 
 *_get_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint;
 
@@ -81,21 +81,19 @@ sub _compile_rule {
         return +{ };
     }
     elsif (!ref $rule) { # single, non-ref parameter is a type name
-        my $tc = _get_type_constraint($rule) or Carp::croak("cannot find type constraint '$rule'");
+        my $tc = _get_type_constraint($rule);
         return +{ type => $tc };
     }
-    else {
-        my %ret;
+    elsif(ref($rule) eq 'HASH') {
+        # rule: { isa => $type, optiona => $bool, default => $default }
+        my %ret = %{$rule};
         if ($rule->{isa}) {
-            my $tc = _get_type_constraint($rule->{isa}) or Carp::croak("cannot find type constraint '$rule'");
-            $ret{type} = $tc;
-        }
-        for my $key (qw/optional default/) {
-            if (exists $rule->{$key}) {
-                $ret{$key} = $rule->{$key};
-            }
+            $ret{type} = _get_type_constraint($rule->{isa});
         }
         return \%ret;
+    }
+    else { # assumes $rule is a type constraint object
+        return +{ type => $rule };
     }
 }
 
