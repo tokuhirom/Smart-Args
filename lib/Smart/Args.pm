@@ -45,16 +45,16 @@ sub args {
     #         ~~~~    ~~~~
     #         undef   defined
 
+    my $used = 0;
     for(my $i = 0; $i < @_; $i++){
 
         (my $name = var_name(1, \$_[$i]))
             or  Carp::croak('usage: args my $var => TYPE, ...');
-
         $name =~ s/^\$//;
 
         # with rule  (my $foo => $rule, ...)
         if(defined $_[ $i + 1 ]) {
-            $_[$i] = _validate_by_rule($args, $name, $_[$i + 1]);
+            $_[$i] = _validate_by_rule($args, $name, $_[$i + 1], \$used);
             $i++;
         }
         # without rule (my $foo, my $bar, ...)
@@ -63,13 +63,27 @@ sub args {
                 Carp::croak("missing mandatory parameter named '\$$name'");
             }
             $_[$i] = $args->{$name};
+            $used++;
         }
     }
+
+    if( $used < keys %{$args} && warnings::enabled('void') )  {
+        my %vars;
+        foreach my $slot(@_) {
+            my $name = var_name(1, \$slot) or next;
+            $name =~ s/^\$//;
+            $vars{$name} = undef;
+        }
+        warnings::warn( void =>
+            'unknown arguments: '
+            . join ', ', sort grep{ not exists $vars{$_} } keys %{$args} );
+    }
+    return;
 }
 
 # rule: $type or +{ isa => $type, optional => $bool, default => $default }
 sub _validate_by_rule {
-    my($args, $name, $basic_rule) = @_;
+    my($args, $name, $basic_rule, $used_ref) = @_;
 
     # compile the rule
     my $rule;
@@ -96,6 +110,7 @@ sub _validate_by_rule {
                 $value = _try_coercion_or_die($type, $value);
             }
         }
+        ${$used_ref}++ if defined $used_ref;
     }
     else {
         if(defined($rule) and exists $rule->{default}){
