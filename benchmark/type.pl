@@ -31,22 +31,12 @@ sub sa_isa_add {
 print "with type constraints: SCALAR / Value\n";
 cmpthese -1, {
     'P::Validate' => sub {
-        foreach my $i(1 .. 100) {
-            my $x = pv_add({ x => $i, y => $i });
-            $x == ($i * 2) or die $x;
-        };
+        my $x = pv_add({ x => 10, y => 10 });
     },
     'S::Args' => sub {
-        foreach my $i(1 .. 100) {
-            my $x = sa_add({ x => $i, y => $i });
-            $x == ($i * 2) or die $x;
-        }
+        my $x = sa_add({ x => 10, y => 10 });
     },
     'S::Args/isa' => sub {
-        foreach my $i(1 .. 100) {
-            my $x = sa_isa_add({ x => $i, y => $i });
-            $x == ($i * 2) or die $x;
-        }
+        my $x = sa_isa_add({ x => 10, y => 10 });
     },
 };
-
