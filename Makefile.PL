@@ -3,7 +3,7 @@ name 'Smart-Args';
 all_from 'lib/Smart/Args.pm';
 
 requires 'PadWalker'    => 1.9;
-requires 'Mouse'        => 0.62;
+requires 'Mouse'        => 0.82;
 requires 'Scalar::Util' => 1.21;    # old version has bug.
 
 tests('t/*.t t/*/*.t t/*/*/*.t');
