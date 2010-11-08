@@ -68,6 +68,7 @@ sub args {
     }
 
     if( $used < keys %{$args} && warnings::enabled('void') )  {
+        # hack to get unused argument names
         my %vars;
         foreach my $slot(@_) {
             my $name = var_name(1, \$slot) or next;
@@ -186,9 +187,13 @@ This module makes your module more readable, and writable =)
 
 =head2 C<args my $var [, $rule], ...>
 
-Checks parameters and fills them into lexical variables.
+Checks parameters and fills them into lexical variables. All the parameters
+are mandatory by default, and unknown parameters (i.e. possibly typos) are
+reported as C<void> warnings.
 
-The arguments consist of a lexical <$var> and an optional I<$rule>.
+The arguments of C<args()> consist of lexical <$var>s and optional I<$rule>s.
+
+I<$vars> must be a declaration of a lexical variable.
 
 I<$rule> can be a type name (e.g. C<Int>), a HASH reference (with
 C<type>, C<default>, and C<optional>), or a type constraint object.
