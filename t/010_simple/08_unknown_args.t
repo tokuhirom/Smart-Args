@@ -22,8 +22,7 @@ use t::lib::Foo;
 }
 
 {
-    use warnings FATAL => 'void';
-
+    local $SIG{__WARN__} = sub { die @_ };
     eval {
         add( x => 10, y => 20, qux => 2 );
     };
