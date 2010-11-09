@@ -2,36 +2,33 @@
 use strict;
 use Test::More;
 use Smart::Args;
-my $warn = '';
-local $SIG{__WARN__} = sub {
-    $warn .= "@_";
-};
+use t::lib::Foo;
+{
+    my $warn = '';
+    local $SIG{__WARN__} = sub {
+        $warn .= "@_";
+    };
 
-sub foo {
-    args my $bar, my $baz;
+    is add(x => 10, y => 20), 30;
+    is $warn, '';
+
+    $warn = '';
+    is add(x => 1, y => 2, qux => 30), 3;
+    like $warn, qr/unknown arguments: qux/;
+
+    $warn = '';
+    is add(bbb => 3, aaa => 4, x => 1, y => 2), 3;
+    like $warn, qr/unknown arguments: aaa, bbb/;
 }
 
-foo(bar => 1, baz => 2);
-is $warn, '';
-
-$warn = '';
-foo(bar => 1, baz => 2, qux => 3);
-like $warn, qr/unknown arguments: qux/;
-
-$warn = '';
-foo(bar => 1, baz => 2, aaa => 3, bbb => 4);
-like $warn, qr/unknown arguments: aaa, bbb/;
-
-
-sub bar {
+{
     use warnings FATAL => 'void';
-    args my $baz;
-}
 
-eval {
-    bar( baz => 1, qux => 2 );
-};
-like $@, qr/unknown arguments: qux/;
+    eval {
+        add( x => 10, y => 20, qux => 2 );
+    };
+    like $@, qr/unknown arguments: qux/;
+}
 
 done_testing;
 
