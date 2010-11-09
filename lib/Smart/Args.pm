@@ -157,7 +157,7 @@ Smart::Args - argument validation for you
     args my $p => {isa => 'Int', default => 3},
   }
   func3(p => 4); # p => 4
-  func3();       # p => 4
+  func3();       # p => 3
 
   package F;
   use Moose;
