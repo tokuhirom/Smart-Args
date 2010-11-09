@@ -1,5 +1,9 @@
 Revision history for Perl extension args
 
+0.06
+
+    - Fix carp level to report warnings in the caller's context (gfx)
+
 0.05
 
     - Unknown parameter names are now warned (gfx)
