@@ -1,8 +1,11 @@
 #!perl -w
 use strict;
-use warnings FATAL => 'all';
+use if $] < 5.010, 'Test::More' => skip_all
+    => 'This test depends on a new warnings::enabled() behaviour';
 use Test::More;
 use t::lib::Foo;
+
+use warnings FATAL => 'all';
 
 is add(x => 1, y => 2), 3;
 
