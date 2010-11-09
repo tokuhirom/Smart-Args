@@ -3,6 +3,7 @@ Revision history for Perl extension args
 0.06
 
     - Fix carp level to report warnings in the caller's context (gfx)
+    - remove testing dependencies for Test::Exception
 
 0.05
 
