@@ -1,5 +1,10 @@
 Revision history for Perl extension args
 
+0.05
+
+    - Unknown parameter names are now warned (gfx)
+    - Fix a typo in SYNOPSIS (@syohex)
+
 0.04
 
     - Invocants can have type rules (gfx):
