@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Smart::Args;
 use Test::More;
-use Test::Exception;
+use t::Util;
 
 is foo(), 99;
 done_testing;

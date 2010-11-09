@@ -3,7 +3,7 @@ use warnings;
 use Test::Requires { 'MouseX::Types' => 0.05 };
 use Smart::Args;
 use Test::More;
-use Test::Exception;
+use t::Util;
 use MouseX::Types::Mouse qw(Int);
 
 lives_ok { foo(foo => 3) }; # yutori is good

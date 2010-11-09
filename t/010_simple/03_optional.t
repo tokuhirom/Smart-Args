@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Smart::Args;
 use Test::More;
-use Test::Exception;
+use t::Util;
 
 is foo(p => 3, q => 2), 3;
 is foo(q => 2), 2;

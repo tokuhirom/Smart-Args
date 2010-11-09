@@ -1,7 +1,7 @@
 #!perl-w
 use strict;
 use Test::More;
-use Test::Exception;
+use t::Util;
 use Smart::Args;
 use Mouse::Util::TypeConstraints;
 

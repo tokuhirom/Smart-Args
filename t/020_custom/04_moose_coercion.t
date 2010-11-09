@@ -2,7 +2,7 @@
 use strict;
 use Test::Requires { 'Moose' => 1.19 };
 use Test::More;
-use Test::Exception;
+use t::Util;
 use Smart::Args;
 use Moose::Util::TypeConstraints;
 

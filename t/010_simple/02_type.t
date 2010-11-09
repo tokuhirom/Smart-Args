@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Smart::Args;
 use Test::More;
-use Test::Exception;
+use t::Util;
 
 lives_ok { foo(foo => 3) }; # yutori is good
 is foo(foo => 3), 6;

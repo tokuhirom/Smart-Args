@@ -11,6 +11,6 @@ author_tests 'xt';
 
 auto_set_repository;
 test_requires 'Test::Requires';
-test_requires 'Test::More' => 0.88;
+test_requires 'Test::More' => 0.96;
 auto_include;
 WriteAll;
