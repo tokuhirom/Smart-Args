@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::Requires { 'Moose' => 1.19, 'MooseX::Types' => 0.24 };
+use Test::Requires { 'Moose' => 1.21, 'MooseX::Types' => 0.25 };
 use Smart::Args;
 use Test::More;
 use t::Util;

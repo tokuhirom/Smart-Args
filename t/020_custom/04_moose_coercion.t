@@ -1,6 +1,6 @@
 #!perl-w
 use strict;
-use Test::Requires { 'Moose' => 1.19 };
+use Test::Requires { 'Moose' => 1.21 };
 use Test::More;
 use t::Util;
 use Smart::Args;
