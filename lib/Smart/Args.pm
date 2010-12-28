@@ -275,7 +275,7 @@ See the SYNOPSIS section for examples.
 
 =head2 C<args_pos my $var[, $rule, ...>
 
-Check parameters and filles them into lexical variables. All the parameters
+Check parameters and fills them into lexical variables. All the parameters
 are mandatory by default.
 
 The arguments of C<args()> consist of lexical <$var>s and optional I<$rule>s.
