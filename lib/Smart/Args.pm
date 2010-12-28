@@ -9,7 +9,7 @@ use Mouse::Util::TypeConstraints ();
 
 *_get_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint;
 
-our @EXPORT = qw/args/;
+our @EXPORT = qw/args args_pos/;
 
 my %is_invocant = map{ $_ => undef } qw($self $class);
 
@@ -27,7 +27,8 @@ sub args {
             $_[0] = shift @DB::args; # set the invocant
             if(defined $_[1]) { # has rule?
                 $name =~ s/^\$//;
-                $_[0] = _validate_by_rule({ $name => $_[0] }, $name, $_[1]);
+                # validate_pos($value, $exists, $name, $basic_rule, $used_ref)
+                $_[0] = _validate_by_rule($_[0], 1, $name, $_[1]);
                 shift;
             }
             shift;
@@ -54,7 +55,8 @@ sub args {
 
         # with rule  (my $foo => $rule, ...)
         if(defined $_[ $i + 1 ]) {
-            $_[$i] = _validate_by_rule($args, $name, $_[$i + 1], \$used);
+            # validate_pos($value, $exists, $name, $basic_rule, $used_ref)
+            $_[$i] = _validate_by_rule($args->{$name}, exists($args->{$name}), $name, $_[$i + 1], \$used);
             $i++;
         }
         # without rule (my $foo, my $bar, ...)
@@ -84,9 +86,69 @@ sub args {
     return;
 }
 
+sub args_pos {
+    {
+        package DB;
+        # call of caller in DB package sets @DB::args,
+        # which requires list context, but we don't need return values
+        () = CORE::caller(1);
+    }
+    if(@_) {
+        my $name = var_name(1, \$_[0]) || '';
+        if(exists $is_invocant{ $name }){ # seems method call
+            $_[0] = shift @DB::args; # set the invocant
+            if(defined $_[1]) { # has rule?
+                $name =~ s/^\$//;
+                # validate_pos($value, $exists, $name, $basic_rule, $used_ref)
+                $_[0] = _validate_by_rule($_[0], 1, $name, $_[1]);
+                shift;
+            }
+            shift;
+        }
+    }
+
+    my @args = @DB::args;
+
+    ### $args
+    ### @_
+
+    # args my $var => RULE
+    #         ~~~~    ~~~~
+    #         undef   defined
+
+    for(my $i = 0; $i < @_; $i++){
+        (my $name = var_name(1, \$_[$i]))
+            or  Carp::croak('usage: args my $var => TYPE, ...');
+
+        # with rule  (my $foo => $rule, ...)
+        if (defined $_[ $i + 1 ]) {
+            $_[$i] = _validate_by_rule($args[0], @args>0, $name, $_[$i + 1]);
+            shift @args;
+            $i++;
+        }
+        # without rule (my $foo, my $bar, ...)
+        else {
+            if (@args == 0) { # parameters are mandatory by default
+                local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+                Carp::croak("missing mandatory parameter named '\$$name'");
+            }
+            $_[$i] = shift @args;
+        }
+    }
+
+    # too much arguments
+    if ( scalar(@args) > 0 )  {
+        # hack to get unused argument names
+        local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+        Carp::croak( void =>
+            'too much arguments. This function requires only ' . scalar(@_) . ' arguments.' );
+    }
+    return;
+}
+
 # rule: $type or +{ isa => $type, optional => $bool, default => $default }
 sub _validate_by_rule {
-    my($args, $name, $basic_rule, $used_ref) = @_;
+    my ($value, $exists, $name, $basic_rule, $used_ref) = @_;
 
     # compile the rule
     my $rule;
@@ -104,10 +166,8 @@ sub _validate_by_rule {
         $type = _get_type_constraint($basic_rule);
     }
 
-    my $value = $args->{$name};
-
     # validate the value by the rule
-    if(exists $args->{$name}){
+    if ($exists){
         if(defined $type ){
             if(!$type->check($value)){
                 $value = _try_coercion_or_die($type, $value);
@@ -176,10 +236,16 @@ Smart::Args - argument validation for you
          my $p => 'Int';
   }
 
+  sub simple_method {
+    args_pos my $self, my $p;
+  }
+
   my $f = F->new();
   $f->method(p => 3);
 
   F->class_method(p => 3);
+
+  F->simple_method(3);
 
 =head1 DESCRIPTION
 
@@ -197,6 +263,22 @@ reported as C<void> warnings.
 
 The arguments of C<args()> consist of lexical <$var>s and optional I<$rule>s.
 
+I<$vars> must be a declaration of a lexical variable.
+
+I<$rule> can be a type name (e.g. C<Int>), a HASH reference (with
+C<type>, C<default>, and C<optional>), or a type constraint object.
+
+Note that if the first variable is named I<$class> or I<$self>, it
+is dealt as a method call.
+
+See the SYNOPSIS section for examples.
+
+=head2 C<args_pos my $var[, $rule, ...>
+
+Check parameters and filles them into lexical variables. All the parameters
+are mandatory by default.
+
+The arguments of C<args()> consist of lexical <$var>s and optional I<$rule>s.
 I<$vars> must be a declaration of a lexical variable.
 
 I<$rule> can be a type name (e.g. C<Int>), a HASH reference (with
