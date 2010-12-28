@@ -1,5 +1,9 @@
 Revision history for Perl extension args
 
+0.08
+
+    - added 'args_pos' function
+
 0.07
 
     - fixed deps in testing
