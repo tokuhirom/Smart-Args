@@ -170,7 +170,7 @@ sub _validate_by_rule {
     if ($exists){
         if(defined $type ){
             if(!$type->check($value)){
-                $value = _try_coercion_or_die($type, $value);
+                $value = _try_coercion_or_die($name, $type, $value);
             }
         }
         ${$used_ref}++ if defined $used_ref;
@@ -191,13 +191,13 @@ sub _validate_by_rule {
 }
 
 sub _try_coercion_or_die {
-    my($tc, $value) = @_;
+    my($name, $tc, $value) = @_;
     if($tc->has_coercion) {
         $value = $tc->coerce($value);
         $tc->check($value) and return $value;
     }
     local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-    Carp::croak($tc->get_message($value));
+    Carp::croak("'$name': " . $tc->get_message($value));
 }
 1;
 __END__
