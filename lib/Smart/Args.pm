@@ -62,8 +62,8 @@ sub args {
         # without rule (my $foo, my $bar, ...)
         else {
             if(!exists $args->{$name}) { # parameters are mandatory by default
-                local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-                Carp::croak("missing mandatory parameter named '\$$name'");
+                @_ = ("missing mandatory parameter named '\$$name'");
+                goto \&Carp::confess;
             }
             $_[$i] = $args->{$name};
             $used++;
@@ -129,8 +129,8 @@ sub args_pos {
         # without rule (my $foo, my $bar, ...)
         else {
             if (@args == 0) { # parameters are mandatory by default
-                local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-                Carp::croak("missing mandatory parameter named '\$$name'");
+                @_ = ("missing mandatory parameter named '\$$name'");
+                goto \&Carp::confess;
             }
             $_[$i] = shift @args;
         }
@@ -180,8 +180,8 @@ sub _validate_by_rule {
             $value = $rule->{default};
         }
         elsif($mandatory){
-            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-            Carp::croak("missing mandatory parameter named '\$$name'");
+            @_ = ("missing mandatory parameter named '\$$name'");
+            goto \&Carp::confess;
         }
         else{
             # no default, and not mandatory; noop
@@ -196,8 +196,8 @@ sub _try_coercion_or_die {
         $value = $tc->coerce($value);
         $tc->check($value) and return $value;
     }
-    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
-    Carp::croak("'$name': " . $tc->get_message($value));
+    @_ = ("'$name': " . $tc->get_message($value));
+    goto \&Carp::confess;
 }
 1;
 __END__

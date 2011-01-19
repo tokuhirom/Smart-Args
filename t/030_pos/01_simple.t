@@ -109,7 +109,7 @@ lovetest 'classname_with_validation' => sub {
     ok(!$@) or diag $@;
 
     eval { Foo::classname_with_validation(+{"FA" => "IL"}) };
-    ok($@) and like($@, qr{^Validation failed});
+    ok($@) and like($@, qr{^'class': Validation failed});
 };
 
 done_testing;
