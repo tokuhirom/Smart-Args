@@ -50,7 +50,7 @@ sub args {
     for(my $i = 0; $i < @_; $i++){
 
         (my $name = var_name(1, \$_[$i]))
-            or  Carp::confess('usage: args my $var => TYPE, ...');
+            or  Carp::croak('usage: args my $var => TYPE, ...');
         $name =~ s/^\$//;
 
         # with rule  (my $foo => $rule, ...)
@@ -62,7 +62,8 @@ sub args {
         # without rule (my $foo, my $bar, ...)
         else {
             if(!exists $args->{$name}) { # parameters are mandatory by default
-                Carp::confess("missing mandatory parameter named '\$$name'");
+                local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+                Carp::croak("missing mandatory parameter named '\$$name'");
             }
             $_[$i] = $args->{$name};
             $used++;
@@ -77,6 +78,7 @@ sub args {
             $name =~ s/^\$//;
             $vars{$name} = undef;
         }
+        local $Carp::CarpLevel = $Carp::CarpLevel + 1;
         warnings::warn( void =>
             'unknown arguments: '
             . join ', ', sort grep{ not exists $vars{$_} } keys %{$args} );
@@ -116,7 +118,7 @@ sub args_pos {
 
     for(my $i = 0; $i < @_; $i++){
         (my $name = var_name(1, \$_[$i]))
-            or  Carp::confess('usage: args my $var => TYPE, ...');
+            or  Carp::croak('usage: args my $var => TYPE, ...');
 
         # with rule  (my $foo => $rule, ...)
         if (defined $_[ $i + 1 ]) {
@@ -127,7 +129,8 @@ sub args_pos {
         # without rule (my $foo, my $bar, ...)
         else {
             if (@args == 0) { # parameters are mandatory by default
-                Carp::confess("missing mandatory parameter named '\$$name'");
+                local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+                Carp::croak("missing mandatory parameter named '\$$name'");
             }
             $_[$i] = shift @args;
         }
@@ -136,7 +139,8 @@ sub args_pos {
     # too much arguments
     if ( scalar(@args) > 0 )  {
         # hack to get unused argument names
-        Carp::confess( void =>
+        local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+        Carp::croak( void =>
             'too much arguments. This function requires only ' . scalar(@_) . ' arguments.' );
     }
     return;
@@ -176,7 +180,8 @@ sub _validate_by_rule {
             $value = $rule->{default};
         }
         elsif($mandatory){
-            Carp::confess("missing mandatory parameter named '\$$name'");
+            local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+            Carp::croak("missing mandatory parameter named '\$$name'");
         }
         else{
             # no default, and not mandatory; noop
@@ -191,9 +196,9 @@ sub _try_coercion_or_die {
         $value = $tc->coerce($value);
         $tc->check($value) and return $value;
     }
-    Carp::confess("'$name': " . $tc->get_message($value));
+    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+    Carp::croak("'$name': " . $tc->get_message($value));
 }
-
 1;
 __END__
 
