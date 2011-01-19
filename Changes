@@ -1,5 +1,9 @@
 Revision history for Perl extension args
 
+0.09
+
+    - better error message with Carp::confess
+
 0.08
 
     - added 'args_pos' function

@@ -1,7 +1,7 @@
 package Smart::Args;
 use strict;
 use warnings;
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 use Exporter 'import';
 use PadWalker qw/var_name/;
 use Carp ();
