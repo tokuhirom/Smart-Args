@@ -1,5 +1,12 @@
 Revision history for Perl extension args
 
+0.10
+
+    better dist
+    - depend to latest Mouse, PadWalker, Exporter.
+    - better M::I
+    - depend to Perl 5.8
+
 0.09
 
     - better error message with Carp::confess
