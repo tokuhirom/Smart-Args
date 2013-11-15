@@ -15,7 +15,7 @@ if ($Module::Install::AUTHOR) {
 	test_requires 'MooseX::Types';
 }
 
-auto_set_repository;
+repository 'https://github.com/tokuhirom/Smart-Args';
 test_requires 'Test::Requires';
 test_requires 'Test::More' => 0.96;
 WriteAll;
