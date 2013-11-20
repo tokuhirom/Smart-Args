@@ -99,7 +99,7 @@ See [Mouse::Util::TypeConstraints](http://search.cpan.org/perldoc?Mouse::Util::T
 
 # AUTHOR
 
-Tokuhiro Matsuno <tokuhirom  slkjfd gmail.com>
+Tokuhiro Matsuno <tokuhirom@gmail.com>
 
 # SEE ALSO
 

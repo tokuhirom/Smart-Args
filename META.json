@@ -1,7 +1,7 @@
 {
    "abstract" : "argument validation for you",
    "author" : [
-      "Tokuhiro Matsuno <tokuhirom  slkjfd gmail.com>"
+      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v0.8.4, CPAN::Meta::Converter version 2.132830",
@@ -77,10 +77,9 @@
          "web" : "https://github.com/tokuhirom/Smart-Args"
       }
    },
-   "version" : "0.10",
+   "version" : "0.11",
    "x_contributors" : [
       "Fuji, Goro <gfuji@cpan.org>",
-      "Neil Bowers <neil@bowers.com>",
-      "Tokuhiro Matsuno <tokuhirom@gmail.com>"
+      "Neil Bowers <neil@bowers.com>"
    ]
 }
