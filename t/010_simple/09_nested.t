@@ -4,7 +4,7 @@ use Smart::Args;
 use Test::More;
 use t::Util;
 
-throws_ok { foo(bar => 3.14) } qr/@{[ __FILE__ ]}/;
+throws_ok { foo(bar => 3.14) } qr/@{[ quotemeta(__FILE__) ]}/;
 note $@;
 done_testing;
 exit;

@@ -2,6 +2,10 @@ Revision history for Perl module Smart::Args
 
 {{$NEXT}}
 
+0.12 2013-11-21T01:22:21Z
+
+    - Fixed a bug in test case.
+
 0.11 2013-11-20T04:43:18Z
 
     - minil migrate
