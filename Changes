@@ -2,6 +2,10 @@ Revision history for Perl module Smart::Args
 
 {{$NEXT}}
 
+0.13 2016-06-23T13:26:46Z
+
+    - support 'does'
+
 0.12 2013-11-21T01:22:21Z
 
     - Fixed a bug in test case.

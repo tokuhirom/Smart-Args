@@ -57,7 +57,7 @@ Checks parameters and fills them into lexical variables. All the parameters
 are mandatory by default, and unknown parameters (i.e. possibly typos) are
 reported as `void` warnings.
 
-The arguments of `args()` consist of lexical <$var>s and optional _$rule_s.
+The arguments of `args()` consist of lexical &lt;$var>s and optional _$rule_s.
 
 _$vars_ must be a declaration of a lexical variable.
 
@@ -74,7 +74,7 @@ See the SYNOPSIS section for examples.
 Check parameters and fills them into lexical variables. All the parameters
 are mandatory by default.
 
-The arguments of `args()` consist of lexical <$var>s and optional _$rule_s.
+The arguments of `args()` consist of lexical &lt;$var>s and optional _$rule_s.
 _$vars_ must be a declaration of a lexical variable.
 
 _$rule_ can be a type name (e.g. `Int`), a HASH reference (with
@@ -95,7 +95,7 @@ so you can use any `MooseX::Types::*` libraries on CPAN.
 
 Type coercions are automatically tried if validations fail.
 
-See [Mouse::Util::TypeConstraints](http://search.cpan.org/perldoc?Mouse::Util::TypeConstraints) for details.
+See [Mouse::Util::TypeConstraints](https://metacpan.org/pod/Mouse::Util::TypeConstraints) for details.
 
 # AUTHOR
 
@@ -103,7 +103,7 @@ Tokuhiro Matsuno <tokuhirom@gmail.com>
 
 # SEE ALSO
 
-[Params::Validate](http://search.cpan.org/perldoc?Params::Validate)
+[Params::Validate](https://metacpan.org/pod/Params::Validate)
 
 # LICENSE
 
