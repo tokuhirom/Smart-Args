@@ -17,3 +17,5 @@ nytprof.out
 !Build/
 !META.json
 !LICENSE
+/_build/
+/MYMETA.*
