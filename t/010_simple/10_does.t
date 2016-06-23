@@ -20,7 +20,7 @@ ok foo(foo => Bar->new);
 
 throws_ok {
     foo(foo => Baz->new());
-} qr/Validation failed for 'Object' with value Foo/;
+} qr/Validation failed for 'Foo' with value Baz/;
 
 done_testing;
 
