@@ -8,7 +8,8 @@ use PadWalker qw/var_name/;
 use Carp ();
 use Mouse::Util::TypeConstraints ();
 
-*_get_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint;
+*_get_isa_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_isa_type_constraint;
+*_get_does_type_constraint = \&Mouse::Util::TypeConstraints::find_or_create_does_type_constraint;
 
 our @EXPORT = qw/args args_pos/;
 
@@ -158,13 +159,15 @@ sub _validate_by_rule {
     if(ref($basic_rule) eq 'HASH') {
         $rule = $basic_rule;
         if (defined $basic_rule->{isa}) {
-            $type = _get_type_constraint($basic_rule->{isa});
+            $type = _get_isa_type_constraint($basic_rule->{isa});
+        } elsif (defined $basic_rule->{does}) {
+            $type = _get_does_type_constraint($basic_rule->{does});
         }
         $mandatory = !$rule->{optional};
     }
     else {
         # $rule is a type constraint name or type constraint object
-        $type = _get_type_constraint($basic_rule);
+        $type = _get_isa_type_constraint($basic_rule);
     }
 
     # validate the value by the rule
