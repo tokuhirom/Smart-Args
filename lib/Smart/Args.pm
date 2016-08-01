@@ -13,6 +13,8 @@ use Mouse::Util::TypeConstraints ();
 
 our @EXPORT = qw/args args_pos/;
 
+our $VERBOSE = 1;
+
 my %is_invocant = map{ $_ => undef } qw($self $class);
 
 sub args {
@@ -185,7 +187,11 @@ sub _validate_by_rule {
         }
         elsif($mandatory){
             @_ = ("missing mandatory parameter named '\$$name'");
-            goto \&Carp::confess;
+            if ($VERBOSE) {
+                goto \&Carp::confess;
+            } else {
+                goto \&Carp::croak;
+            }
         }
         else{
             # no default, and not mandatory; noop
@@ -201,7 +207,11 @@ sub _try_coercion_or_die {
         $tc->check($value) and return $value;
     }
     @_ = ("'$name': " . $tc->get_message($value));
-    goto \&Carp::confess;
+    if ($VERBOSE) {
+        goto \&Carp::confess;
+    } else {
+        goto \&Carp::croak;
+    }
 }
 1;
 __END__
