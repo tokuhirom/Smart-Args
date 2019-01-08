@@ -15,6 +15,7 @@ on test => sub {
     requires 'MooseX::Types::Moose';
     requires 'MouseX::Types';
     requires 'MouseX::Types::Mouse';
+    requires 'Type::Tiny', '1.0';
 };
 
 on develop => sub {
